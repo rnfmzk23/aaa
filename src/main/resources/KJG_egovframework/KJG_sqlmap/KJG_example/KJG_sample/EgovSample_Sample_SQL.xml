@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Sample">
+
+   <typeAlias  alias="egovMap" type="org.egovframe.rte.psl.dataaccess.util.EgovMap"/>
+   <typeAlias  alias="searchVO" type="egovframework.example.sample.service.KJG_SampleDefaultVO"/>
+   <typeAlias  alias="csearchVO" type="egovframework.example.code.service.KJG_CodeDefaultVO"/>
+   <typeAlias  alias="schlsearchVO" type="egovframework.example.schl.service.KJG_SchlDefaultVO"/>
+
+   <resultMap id="sample" class="egovframework.example.sample.service.KJG_SampleVO">
+      <result property="id" column="KJG_ID"/>
+      <result property="name" column="KJG_NAME"/>
+      <result property="description" column="KJG_DESCRIPTION"/>
+      <result property="useYn" column="KJG_USE_YN"/>
+      <result property="regUser" column="KJG_USER"/>
+   </resultMap>
+   
+    <resultMap id="code" class="egovframework.example.code.service.KJG_CodeVO">
+      <result property="code" column="KJG_CODE"/>
+      <result property="codename" column="KJG_CODE_NAME"/>
+      <result property="codedc" column="KJG_CODE_DC"/>
+   </resultMap>
+   
+   <resultMap id="schl" class="egovframework.example.schl.service.KJG_SchlVO">
+      <result property="schlcode" column="KJG_SCHL_ID"/>
+      <result property="schlname" column="KJG_SCHL_NAME"/>
+      <result property="schlregion" column="KJG_SCHL_REGION"/>
+      <result property="schlurl" column="KJG_SCHL_URL"/>
+      <result property="schldate" column="KJG_SCHL_DATE"/>
+   </resultMap>
+
+   <insert id="sampleDAO.insertSample">
+      <![CDATA[
+         INSERT INTO KJG_BOARD
+            ( KJG_ID
+              , KJG_NAME
+              , KJG_DESCRIPTION
+              , KJG_USE_YN
+              , KJG_USER )
+         VALUES ( #id#
+              , #name#
+              , #description#
+              , #useYn#
+              , #regUser# )
+      ]]>
+   </insert>
+   
+   <update id="sampleDAO.updateSample">
+      <![CDATA[
+         UPDATE KJG_BOARD
+         SET KJG_ID=#id#
+            , KJG_NAME=#name#
+            , KJG_DESCRIPTION=#description#
+            , KJG_USE_YN=#useYn#
+         WHERE KJG_ID=#id#
+      ]]>
+   </update>
+   
+   <delete id="sampleDAO.deleteSample">
+      <![CDATA[
+         DELETE FROM KJG_BOARD 
+         WHERE KJG_ID=#id#
+      ]]>
+   </delete>
+    
+    <select id="sampleDAO.selectSample" resultMap="sample">
+        <![CDATA[
+            SELECT
+                KJG_ID, KJG_NAME, KJG_DESCRIPTION, KJG_USE_YN, KJG_USER
+            FROM KJG_BOARD
+            WHERE KJG_ID=#id#
+        ]]>
+    </select>
+   
+   <select id="sampleDAO.selectSampleList" parameterClass="searchVO" resultClass="egovMap">
+
+         SELECT
+            KJG_ID, KJG_NAME, KJG_DESCRIPTION, KJG_USE_YN, KJG_USER
+         FROM KJG_BOARD
+         WHERE 1=1
+         <isEqual prepend="AND" property="searchCondition" compareValue="0">
+            KJG_ID LIKE '%' || #searchKeyword# || '%'
+         </isEqual>
+         <isEqual prepend="AND" property="searchCondition" compareValue="1">
+            KJG_NAME LIKE '%' || #searchKeyword# || '%'
+         </isEqual>
+         ORDER BY KJG_ID DESC
+         OFFSET #firstIndex# ROWS
+         FETCH NEXT #recordCountPerPage# ROWS ONLY   
+   </select>
+   
+   <select id="sampleDAO.selectSampleListTotCnt" parameterClass="searchVO" resultClass="int">
+
+         SELECT COUNT(*) totcnt
+         FROM KJG_BOARD
+         WHERE 1=1
+         <isEqual prepend="AND" property="searchCondition" compareValue="0">
+            KJG_ID LIKE '%' || #searchKeyword# || '%'
+         </isEqual>
+         <isEqual prepend="AND" property="searchCondition" compareValue="1">
+            KJG_NAME LIKE '%' || #searchKeyword# || '%'
+         </isEqual>
+   </select>
+   
+      <insert id="codeDAO.insertCode">
+      <![CDATA[
+         INSERT INTO JOIN_KJG_CODE_MANAGE
+            ( KJG_CODE
+              , KJG_CODE_NAME
+              , KJG_CODE_DC
+               )
+         VALUES ( #code#
+              , #codename#
+              , #codedc#
+               )
+      ]]>
+   </insert>
+   
+   <update id="codeDAO.updateCode">
+      <![CDATA[
+         UPDATE JOIN_KJG_CODE_MANAGE
+         SET KJG_CODE=#code#
+            , KJG_CODE_NAME=#codename#
+            , KJG_CODE_DC=#codedc#
+         WHERE KJG_CODE=#code#
+      ]]>
+   </update>
+   
+   <delete id="codeDAO.deleteCode">
+      <![CDATA[
+         DELETE FROM JOIN_KJG_CODE_MANAGE 
+         WHERE KJG_CODE=#code#
+      ]]>
+   </delete>
+    
+    <select id="codeDAO.selectCode" resultMap="code">
+        <![CDATA[
+            SELECT
+                KJG_CODE, KJG_CODE_NAME, KJG_CODE_DC
+            FROM JOIN_KJG_CODE_MANAGE
+            WHERE KJG_CODE=#code#
+        ]]>
+    </select>
+   
+   <select id="codeDAO.selectCodeList" parameterClass="csearchVO" resultClass="egovMap">
+
+         SELECT
+            KJG_CODE, KJG_CODE_NAME, KJG_CODE_DC
+         FROM JOIN_KJG_CODE_MANAGE
+         WHERE 1=1
+         <isEqual prepend="AND" property="searchCondition" compareValue="0">
+            KJG_CODE LIKE '%' || #searchKeyword# || '%'
+         </isEqual>
+         <isEqual prepend="AND" property="searchCondition" compareValue="1">
+            KJG_CODE_NAME LIKE '%' || #searchKeyword# || '%'
+         </isEqual>
+         ORDER BY KJG_CODE DESC
+         OFFSET #firstIndex# ROWS
+         FETCH NEXT #recordCountPerPage# ROWS ONLY   
+   </select>
+     
+   <select id="codeDAO.selectCodeListTotCnt" parameterClass="csearchVO" resultClass="int">
+
+         SELECT COUNT(*) totcnt
+         FROM JOIN_KJG_CODE_MANAGE
+         WHERE 1=1
+         <isEqual prepend="AND" property="searchCondition" compareValue="0">
+            KJG_CODE LIKE '%' || #searchKeyword# || '%'
+         </isEqual>
+         <isEqual prepend="AND" property="searchCondition" compareValue="1">
+            KJG_CODE_NAME LIKE '%' || #searchKeyword# || '%'
+         </isEqual>
+   </select>
+   
+   <insert id="schlDAO.insertSchl">
+      <![CDATA[
+         INSERT INTO JOIN_KJG_SCHL_MANAGE
+            ( KJG_SCHL_ID
+              , KJG_CODE
+              , KJG_SCHL_NAME
+              , KJG_SCHL_REGION
+              , KJG_SCHL_URL
+               )
+         VALUES ( #schlcode#
+         	  , #code#
+              , #schlname#
+              , #schlregion#
+              , #schlurl#
+               )
+      ]]>
+   </insert>
+   
+   <update id="schlDAO.updateSchl">
+      <![CDATA[
+         UPDATE JOIN_KJG_SCHL_MANAGE
+         SET KJG_SCHL_ID=#schlcode#
+            , KJG_SCHL_NAME=#schlname#
+            , KJG_SCHL_REGION=#schlregion#
+            , KJG_SCHL_URL=#schlurl#
+         WHERE KJG_SCHL_ID=#schlcode#
+      ]]>
+   </update>
+   
+   <delete id="schlDAO.deleteSchl">
+      <![CDATA[
+         DELETE FROM JOIN_KJG_SCHL_MANAGE 
+         WHERE KJG_SCHL_ID=#schlcode#
+      ]]>
+   </delete>
+    
+    <select id="schlDAO.selectschl" resultMap="schl">
+        <![CDATA[
+            SELECT
+                KJG_SCHL_ID, KJG_SCHL_NAME, KJG_SCHL_REGION, KJG_SCHL_URL, KJG_SCHL_DATE
+            FROM JOIN_KJG_SCHL_MANAGE
+            WHERE KJG_SCHL_ID=#schlcode#
+        ]]>
+    </select>
+   
+   <select id="schlDAO.selectSchlList" parameterClass="schlsearchVO" resultClass="egovMap">
+
+         select
+ 			a.kjg_code,
+ 			b.kjg_schl_id,
+ 			b.kjg_schl_region, 
+ 			b.kjg_schl_name,
+			b.kjg_schl_url,
+ 			b.kjg_schl_date
+		from join_kjg_code_manage a
+		join join_kjg_schl_manage b on a.kjg_code = b.kjg_code
+         WHERE 1=1
+         <isEqual prepend="AND" property="searchCondition" compareValue="0">
+            KJG_SCHL_ID LIKE '%' || #searchKeyword# || '%'
+         </isEqual>
+         <isEqual prepend="AND" property="searchCondition" compareValue="1">
+            KJG_SCHL_NAME LIKE '%' || #searchKeyword# || '%'
+         </isEqual>
+         ORDER BY KJG_SCHL_ID DESC
+         OFFSET #firstIndex# ROWS
+         FETCH NEXT #recordCountPerPage# ROWS ONLY   
+   </select>
+     
+   <select id="schlDAO.selectSchlListTotCnt" parameterClass="schlsearchVO" resultClass="int">
+
+         SELECT COUNT(*) totcnt
+         FROM JOIN_KJG_SCHL_MANAGE
+         WHERE 1=1
+         <isEqual prepend="AND" property="searchCondition" compareValue="0">
+            KJG_SCHL_ID LIKE '%' || #searchKeyword# || '%'
+         </isEqual>
+         <isEqual prepend="AND" property="searchCondition" compareValue="1">
+            KJG_SCHL_NAME LIKE '%' || #searchKeyword# || '%'
+         </isEqual>
+   </select>
+ 
+</sqlMap>
